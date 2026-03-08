@@ -2,7 +2,6 @@
 let instrument1, instrument2;
 let voices = [];
 
-let currentPreset = 1;
 let presets = [
   { name: "Soft Pad",      osc: "sine",     attack: 1.2,   decay: 0.5,  sustain: 0.8, release: 2.0  },
   { name: "Plucked",       osc: "triangle", attack: 0.001, decay: 0.4,  sustain: 0,   release: 0.2  },
@@ -787,7 +786,6 @@ function draw() {
   
   volumeButton();
   txt();
-  drawPresetPanel();
 
   if (ready == true && firstRun == false) {
     timbre();
@@ -833,75 +831,9 @@ function timbre() {
 
 
 
-function applyPreset(index) {
-  currentPreset = index;
-  let p = presets[index];
-  for (let i = 0; i < voices.length; i++) {
-    voices[i].oscillator.type = p.osc;
-    voices[i].envelope.attack  = p.attack;
-    voices[i].envelope.decay   = p.decay;
-    voices[i].envelope.sustain = p.sustain;
-    voices[i].envelope.release = p.release;
-  }
-}
-
-function drawPresetPanel() {
-  let panelW = 160;
-  let btnH   = 60;
-  let btnGap = 12;
-  let startY = 100;
-  let padX   = 15;
-
-  // panel background
-  noStroke();
-  fill(20, 20, 20, 200);
-  rect(0, startY - 10, panelW, presets.length * (btnH + btnGap) + 50, 8);
-
-  textAlign(LEFT, CENTER);
-  textSize(11);
-  fill(180);
-  noStroke();
-  text('SOUND PRESET', padX, startY - 24);
-
-  for (let i = 0; i < presets.length; i++) {
-    let bx = padX;
-    let by = startY + i * (btnH + btnGap);
-    let bw = panelW - padX * 2;
-
-    let isSelected = (i == currentPreset);
-
-    // button background
-    noStroke();
-    fill(isSelected ? color(80, 60, 140) : color(45, 45, 55));
-    rect(bx, by, bw, btnH, 6);
-
-    // label
-    fill(isSelected ? 255 : 180);
-    textSize(13);
-    textAlign(CENTER, CENTER);
-    text(presets[i].name, bx + bw / 2, by + btnH / 2);
-  }
-}
 
 function mousePressed() {
 
-  // preset panel clicks
-  if (voices.length > 0) {
-    let panelW = 160;
-    let btnH   = 60;
-    let btnGap = 12;
-    let startY = 100;
-    let padX   = 15;
-    if (mouseX > padX && mouseX < panelW - padX) {
-      for (let i = 0; i < presets.length; i++) {
-        let by = startY + i * (btnH + btnGap);
-        if (mouseY > by && mouseY < by + btnH) {
-          applyPreset(i);
-          return;
-        }
-      }
-    }
-  }
 
   if (width - 100 < mouseX && mouseX < width && mouseY < 100 && mute == true) {
     mute = false;

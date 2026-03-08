@@ -858,6 +858,7 @@ function mousePressed() {
 
     if (firstRun == true) {
 
+      Tone.context.resume();
       synth1();
       mattsMarkov();
       chordMake();

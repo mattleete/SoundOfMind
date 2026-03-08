@@ -1,7 +1,16 @@
+
+
 html, body {
-  margin: 0;
-  padding: 0;
+  text-align: center
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  background-color: rgb(25, 25, 25);
+  
 }
 canvas {
   display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }

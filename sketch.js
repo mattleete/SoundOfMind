@@ -211,7 +211,7 @@ function synth1() {
 
   const gain1 = new Tone.Gain(0.3);
 
-  instrument1 = new Tone.MonoSynth({
+  instrument1 = new Tone.PolySynth(Tone.MonoSynth, {
 
     "oscillator": {
       "type": "triangle"
@@ -330,39 +330,10 @@ function loopArp() {
 
   toneLoop1 = new Tone.Loop(function(time) {
 
-
-    let pitch1 = chords[chordName][0];
-    instrument1.triggerAttackRelease(pitch1, "8n");
-
+    let notes = chords[chordName];
+    instrument1.triggerAttackRelease(notes, "8n");
 
   }, "2n").start(0);
-
-  toneLoop2 = new Tone.Loop(function(time) {
-
-
-    let pitch2 = chords[chordName][1];
-    instrument1.triggerAttackRelease(pitch2, "8n");
-
-
-  }, "2n").start(0.25);
-
-  toneLoop3 = new Tone.Loop(function(time) {
-
-
-    let pitch3 = chords[chordName][2];
-    instrument1.triggerAttackRelease(pitch3, "8n");
-
-
-  }, "2n").start(0.5);
-
-  toneLoop4 = new Tone.Loop(function(time) {
-
-
-    let pitch4 = chords[chordName][3];
-    instrument1.triggerAttackRelease(pitch4, "8n");
-
-
-  }, "2n").start(0.75);
 
 
 }

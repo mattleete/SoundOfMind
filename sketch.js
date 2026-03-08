@@ -821,11 +821,6 @@ function timbre() {
   // Reverb wet: spacious at low energy, dry at high energy
   effect1.wet.value = lerp(0.7, 0.1, energy);
 
-  // Reverb room size: large at low valence, small at high valence
-  effect1.roomSize.value = lerp(0.9, 0.3, valence);
-
-  // Reverb dampening: dark at low valence, bright at high valence
-  effect1.dampening.value = lerp(1500, 6000, valence);
 
 }
 

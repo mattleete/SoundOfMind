@@ -170,7 +170,7 @@ function gotPoses(poses) {
     pose = poses[0].pose;
     skeleton = poses[0].skeleton;
   }
-  if (pose.keypoints[16].score > 0.6 && pose.keypoints[0].score > 0.6) {
+  if (pose && pose.keypoints[16].score > 0.6 && pose.keypoints[0].score > 0.6) {
     allIn = true;
   } else {
     allIn = false;

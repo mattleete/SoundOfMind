@@ -146,8 +146,6 @@ function predictEmotion() {
     brain.predict(inputs, gotResult);
   } else {
 
-    poseNet = ml5.poseNet(video, modelLoaded);
-    poseNet.on('pose', gotPoses);
     setTimeout(predictEmotion, 500);
 
   }
@@ -160,7 +158,7 @@ function gotResult(error, results) {
   let v = results[1].value;
   eSlider.value(e);
   vSlider.value(v);
-  predictEmotion();
+  setTimeout(predictEmotion, 100);
 }
 
 
@@ -734,7 +732,6 @@ function mattsMarkov() {
     console.log('last note is too big!' + lastNote);
   }
 
-  console.log('last note = ' + lastN, 'next note = ' + nextN, 'loopCount = ' + loopCount, 'current happinesss = ' + h);
 
 }
 
@@ -752,8 +749,9 @@ function draw() {
   translate(video.width * 1.6, 0);
   scale(-1.6, 1.6);
   //scale(-1, 1);
+  drawingContext.filter = 'grayscale(100%)';
   image(video, 0, 0, video.width, video.height);
-  filter(GRAY);
+  drawingContext.filter = 'none';
 
   e = eSlider.value();
   v = vSlider.value();

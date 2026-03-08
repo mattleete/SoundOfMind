@@ -219,9 +219,8 @@ function synth1() {
     Q: 1,
   });
 
-  effect1 = new Tone.PingPongDelay({
-    "delayTime": "6n",
-    "feedback": 0.4,
+  effect1 = new Tone.Reverb({
+    "decay": 4,
     "wet": 0.4
   });
 

@@ -211,29 +211,15 @@ function synth1() {
 
   const gain1 = new Tone.Gain(0.3);
 
-  instrument1 = new Tone.PolySynth(Tone.MonoSynth, {
-
+  instrument1 = new Tone.PolySynth(Tone.Synth, {
     "oscillator": {
       "type": "triangle"
-    },
-    "filter": {
-      "Q": 2,
-      "type": "lowpass",
-      "rolloff": -12
     },
     "envelope": {
       "attack": 0.005,
       "decay": 3,
       "sustain": 0,
       "release": 0.45
-    },
-    "filterEnvelope": {
-      "attack": 0.201,
-      "decay": 0.32,
-      "sustain": 0.9,
-      "release": 3,
-      "baseFrequency": 700,
-      "octaves": 2.3
     },
     "volume": 10
   });
@@ -813,7 +799,7 @@ function timbre() {
 
   filt1.frequency.value = 600 + (energy * 3000);
   
-  instrument1.envelope.attack = (0.01 + ((energy - 1) * 0.2) * (energy - 1));
+  instrument1.set({ envelope: { attack: (0.01 + ((energy - 1) * 0.2) * (energy - 1)) } });
   
 
 }

@@ -12,6 +12,7 @@ let presets = [
 ];
 let filt1;
 let effect1, effect2;
+let chorus1;
 
 
 let nextN = 1;
@@ -28,20 +29,20 @@ let toneCenter = 'C';
 
 let chords = {
 
-  //Standards
-  "C": ["C4", "E4", "G4", "E4"],
-  "Dm": ["A3", "D4", "F4", "D4"],
-  "Em": ["B3", "E4", "G4", "E4"],
-  "F": ["C4", "F4", "A4", "F4"],
-  "G": ["D4", "G4", "B4", "G4"],
-  "Am": ["A4", "C4", "E4", "C4"],
-  "Bd": ["B4", "D4", "F4", "D4"],
+  //Standards - spread across 2 octaves
+  "C":  ["C3", "G3", "E4", "C5"],
+  "Dm": ["D3", "A3", "F4", "A4"],
+  "Em": ["E3", "B3", "G4", "B4"],
+  "F":  ["F3", "C4", "A4", "C5"],
+  "G":  ["G2", "D3", "B3", "G4"],
+  "Am": ["A2", "E3", "C4", "A4"],
+  "Bd": ["B2", "F3", "D4", "B4"],
 
   // Neutrals
-  "Ds": ["A3", "D4", "E4", "D4"],
-  "Es": ["E4", "F4", "A4", "B4"],
-  "Fs": ["F4", "G4", "B4", "G4"],
-  "Gs": ["G4", "A4", "F4", "A4"]
+  "Ds": ["D3", "A3", "E4", "A4"],
+  "Es": ["E3", "A3", "F4", "B4"],
+  "Fs": ["F3", "G3", "B3", "G4"],
+  "Gs": ["G3", "A3", "F4", "A4"]
 }
 
 let h = 0.51;
@@ -228,9 +229,18 @@ function synth1() {
     Q: 1,
   });
 
-  effect1 = new Tone.Reverb({
-    "decay": 4,
-    "wet": 0.4
+  chorus1 = new Tone.Chorus({
+    frequency: 3,
+    delayTime: 3.5,
+    depth: 0.5,
+    wet: 0.4
+  });
+  chorus1.start();
+
+  effect1 = new Tone.Freeverb({
+    roomSize: 0.8,
+    dampening: 3000,
+    wet: 0.5
   });
 
   let synthOptions = {
@@ -249,7 +259,8 @@ function synth1() {
   }
   instrument1 = voices[0];
 
-  gain1.connect(filt1);
+  gain1.connect(chorus1);
+  chorus1.connect(filt1);
   filt1.connect(effect1);
   effect1.connect(Tone.Master);
 
@@ -305,7 +316,8 @@ function loopArp() {
     (function(voiceIndex) {
       new Tone.Loop(function(time) {
         let note = chords[chordName][voiceIndex];
-        voices[voiceIndex].triggerAttackRelease(note, "1n", time);
+        let dur = lerp(2.4, 0.3, energy);
+        voices[voiceIndex].triggerAttackRelease(note, dur, time);
       }, "1n").start(beatOffsets[voiceIndex]);
     })(i);
   }
@@ -790,19 +802,33 @@ function timbre() {
   let pad   = presets[0]; // energy = 0
   let pluck = presets[1]; // energy = 1
 
+  // Envelope blend
   let attack  = lerp(pad.attack,  pluck.attack,  energy);
   let decay   = lerp(pad.decay,   pluck.decay,   energy);
   let sustain = lerp(pad.sustain, pluck.sustain, energy);
   let release = lerp(pad.release, pluck.release, energy);
-  let oscType = energy > 0.5 ? pluck.osc : pad.osc;
 
   for (let i = 0; i < voices.length; i++) {
-    voices[i].oscillator.type    = oscType;
     voices[i].envelope.attack    = attack;
     voices[i].envelope.decay     = decay;
     voices[i].envelope.sustain   = sustain;
     voices[i].envelope.release   = release;
   }
+
+  // Filter: dark at low energy, bright at high energy
+  filt1.frequency.value = lerp(600, 4000, energy);
+
+  // Chorus: thick at low energy, dry at high energy
+  chorus1.wet.value = lerp(0.5, 0, energy);
+
+  // Reverb wet: spacious at low energy, dry at high energy
+  effect1.wet.value = lerp(0.7, 0.1, energy);
+
+  // Reverb room size: large at low valence, small at high valence
+  effect1.roomSize.value = lerp(0.9, 0.3, valence);
+
+  // Reverb dampening: dark at low valence, bright at high valence
+  effect1.dampening.value = lerp(1500, 6000, valence);
 
 }
 

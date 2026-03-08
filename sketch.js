@@ -1,5 +1,6 @@
 ////////////////// Composition global variables/////////////////////////////
 let instrument1, instrument2;
+let voices = [];
 let filt1;
 let effect1, effect2;
 
@@ -211,55 +212,38 @@ function synth1() {
 
   const gain1 = new Tone.Gain(0.3);
 
-  instrument1 = new Tone.PolySynth(Tone.Synth, {
-    "oscillator": {
-      "type": "triangle"
-    },
-    "envelope": {
-      "attack": 0.005,
-      "decay": 3,
-      "sustain": 0,
-      "release": 0.45
-    },
-    "volume": 10
-  });
-
-
-
   filt1 = new Tone.Filter({
     type: 'lowpass',
     frequency: 850,
     rolloff: -12,
     Q: 1,
-  })
+  });
 
   effect1 = new Tone.PingPongDelay({
-
     "delayTime": "6n",
     "feedback": 0.4,
     "wet": 0.4
-
   });
 
-  //   effect2 = new Tone.PitchShift({
+  let synthOptions = {
+    "oscillator": { "type": "triangle" },
+    "filter": { "Q": 2, "type": "lowpass", "rolloff": -12 },
+    "envelope": { "attack": 0.005, "decay": 3, "sustain": 0, "release": 0.45 },
+    "filterEnvelope": { "attack": 0.201, "decay": 0.32, "sustain": 0.9, "release": 3, "baseFrequency": 700, "octaves": 2.3 },
+    "volume": 10
+  };
 
+  voices = [];
+  for (let i = 0; i < 4; i++) {
+    let v = new Tone.MonoSynth(synthOptions);
+    v.connect(gain1);
+    voices.push(v);
+  }
+  instrument1 = voices[0];
 
-  // 	"pitch": -5,
-  // 	"windowSize": 0.05,
-  // 	"delayTime": 0.3,
-  // 	"feedback": 0.2,
-  //     "wet": 0.5
-
-  //   });
-
-  // filt.toMaster();
-
-  instrument1.connect(gain1);
   gain1.connect(filt1);
   filt1.connect(effect1);
-  //filt1.connect(effect2);
   effect1.connect(Tone.Master);
-  //effect2.connect(Tone.Master);
 
   console.log('Synth loaded!');
 
@@ -317,7 +301,9 @@ function loopArp() {
   toneLoop1 = new Tone.Loop(function(time) {
 
     let notes = chords[chordName];
-    instrument1.triggerAttackRelease(notes, "8n");
+    for (let i = 0; i < voices.length; i++) {
+      voices[i].triggerAttackRelease(notes[i], "8n", time);
+    }
 
   }, "2n").start(0);
 
@@ -799,7 +785,10 @@ function timbre() {
 
   filt1.frequency.value = 600 + (energy * 3000);
   
-  instrument1.set({ envelope: { attack: (0.01 + ((energy - 1) * 0.2) * (energy - 1)) } });
+  let attack = (0.01 + ((energy - 1) * 0.2) * (energy - 1));
+  for (let i = 0; i < voices.length; i++) {
+    voices[i].envelope.attack = attack;
+  }
   
 
 }
@@ -858,11 +847,12 @@ function volumeControl() {
 
   if (mute) {
 
-    instrument1.volume.value = -100;
+    for (let i = 0; i < voices.length; i++) { voices[i].volume.value = -100; }
 
   } else if (mute == false) {
 
-    instrument1.volume.value = ((energy - 1) * (energy - 1) * 4) - 10;
+    let vol = ((energy - 1) * (energy - 1) * 4) - 10;
+    for (let i = 0; i < voices.length; i++) { voices[i].volume.value = vol; }
 
   }
 

@@ -223,7 +223,7 @@ function synth1() {
 
   filt1 = new Tone.Filter({
     type: 'lowpass',
-    frequency: 850,
+    frequency: 3000,
     rolloff: -12,
     Q: 1,
   });
@@ -787,13 +787,22 @@ function draw() {
 
 function timbre() {
 
-  filt1.frequency.value = 600 + (energy * 3000);
-  
-  let attack = (0.01 + ((energy - 1) * 0.2) * (energy - 1));
+  let pad   = presets[0]; // energy = 0
+  let pluck = presets[1]; // energy = 1
+
+  let attack  = lerp(pad.attack,  pluck.attack,  energy);
+  let decay   = lerp(pad.decay,   pluck.decay,   energy);
+  let sustain = lerp(pad.sustain, pluck.sustain, energy);
+  let release = lerp(pad.release, pluck.release, energy);
+  let oscType = energy > 0.5 ? pluck.osc : pad.osc;
+
   for (let i = 0; i < voices.length; i++) {
-    voices[i].envelope.attack = attack;
+    voices[i].oscillator.type    = oscType;
+    voices[i].envelope.attack    = attack;
+    voices[i].envelope.decay     = decay;
+    voices[i].envelope.sustain   = sustain;
+    voices[i].envelope.release   = release;
   }
-  
 
 }
 
@@ -923,8 +932,7 @@ function volumeControl() {
 
   } else if (mute == false) {
 
-    let vol = ((energy - 1) * (energy - 1) * 4) - 10;
-    for (let i = 0; i < voices.length; i++) { voices[i].volume.value = vol; }
+    for (let i = 0; i < voices.length; i++) { voices[i].volume.value = -6; }
 
   }
 

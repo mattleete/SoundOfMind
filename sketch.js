@@ -235,7 +235,6 @@ function synth1() {
     depth: 0.5,
     wet: 0.4
   });
-  chorus1.start();
 
   effect1 = new Tone.Freeverb({
     roomSize: 0.8,

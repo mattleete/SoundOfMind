@@ -12,6 +12,7 @@ let presets = [
 let filt1;
 let effect1, effect2;
 let chorus1;
+let comp1;
 
 
 let nextN = 1;
@@ -235,10 +236,17 @@ function synth1() {
     wet: 0.4
   });
 
+  comp1 = new Tone.Compressor({
+    threshold: -24,
+    ratio: 4,
+    attack: 0.003,
+    release: 0.25
+  });
+
   effect1 = new Tone.Freeverb({
-    roomSize: 0.8,
+    roomSize: 0.5,
     dampening: 3000,
-    wet: 0.5
+    wet: 0.4
   });
 
   let synthOptions = {
@@ -259,7 +267,8 @@ function synth1() {
 
   gain1.connect(chorus1);
   chorus1.connect(filt1);
-  filt1.connect(effect1);
+  filt1.connect(comp1);
+  comp1.connect(effect1);
   effect1.connect(Tone.Master);
 
   console.log('Synth loaded!');
@@ -819,7 +828,7 @@ function timbre() {
   chorus1.wet.value = lerp(0.5, 0, energy);
 
   // Reverb wet: spacious at low energy, dry at high energy
-  effect1.wet.value = lerp(0.7, 0.1, energy);
+  effect1.wet.value = lerp(0.4, 0.1, energy);
 
 
 }

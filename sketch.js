@@ -285,27 +285,22 @@ function loopArp() {
       center();
       chordName = toneCenter;
       loopCount = 0;
-      console.log('loopCount = ' + loopCount);
     } else if (loopCount == 1) {
       center();
       chordName = toneCenter;
-      console.log('loopCount = ' + loopCount);
-    }
-
-    console.log(chordName);
-
-
-
-  }, "1n").start(0);
-
-  toneLoop1 = new Tone.Loop(function(time) {
-
-    let notes = chords[chordName];
-    for (let i = 0; i < voices.length; i++) {
-      voices[i].triggerAttackRelease(notes[i], "8n", time);
     }
 
   }, "2n").start(0);
+
+  let beatOffsets = ["0:0:0", "0:1:0", "0:2:0", "0:3:0"];
+  for (let i = 0; i < 4; i++) {
+    (function(voiceIndex) {
+      new Tone.Loop(function(time) {
+        let note = chords[chordName][voiceIndex];
+        voices[voiceIndex].triggerAttackRelease(note, "1n", time);
+      }, "1n").start(beatOffsets[voiceIndex]);
+    })(i);
+  }
 
 
 }

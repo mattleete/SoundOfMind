@@ -244,9 +244,9 @@ function synth1() {
   });
 
   effect1 = new Tone.Freeverb({
-    roomSize: 0.5,
+    roomSize: 0.3,
     dampening: 3000,
-    wet: 0.4
+    wet: 0.25
   });
 
   let synthOptions = {
@@ -828,7 +828,7 @@ function timbre() {
   chorus1.wet.value = lerp(0.5, 0, energy);
 
   // Reverb wet: spacious at low energy, dry at high energy
-  effect1.wet.value = lerp(0.4, 0.1, energy);
+  effect1.wet.value = lerp(0.25, 0.05, energy);
 
 
 }
